@@ -11,6 +11,7 @@ object Absinthe {
     const val GITHUB_HOME_PAGE = "https://github.com/zhaobozhen"
     const val WEBSITE = "https://absinthe.life"
     const val MARKET_DETAIL_SCHEME = "market://details?id="
+    const val COOLAPK_HOME_PAGE = "coolmarket://u/482045"
 
     const val ANYWHERE_ = "com.absinthe.anywhere_"
     const val KAGE = "com.absinthe.kage"
@@ -20,10 +21,10 @@ object Absinthe {
     fun getAboutPageRecommendedApps(context: Context, packageName: String = ""): List<Contributor> {
 
         val list = mutableListOf(
-                Contributor(R.drawable.anywhere_icon, context.getString(R.string.anywhere_intro), "$MARKET_DETAIL_SCHEME$ANYWHERE_"),
-                Contributor(R.drawable.kage_icon, context.getString(R.string.kage_intro), "$MARKET_DETAIL_SCHEME$KAGE"),
-                Contributor(R.drawable.libchecker_icon, context.getString(R.string.lc_intro), "$MARKET_DETAIL_SCHEME$LIBCHECKER"),
-                Contributor(R.drawable.tamashii_icon, context.getString(R.string.tamashii_intro), "$MARKET_DETAIL_SCHEME$TAMASHII")
+                Contributor(R.drawable.anywhere_icon, "Anywhere-", context.getString(R.string.anywhere_intro), "$MARKET_DETAIL_SCHEME$ANYWHERE_"),
+                Contributor(R.drawable.kage_icon, "Kage(Beta)", context.getString(R.string.kage_intro), "$MARKET_DETAIL_SCHEME$KAGE"),
+                Contributor(R.drawable.libchecker_icon, "LibChecker", context.getString(R.string.lc_intro), "$MARKET_DETAIL_SCHEME$LIBCHECKER"),
+                Contributor(R.drawable.tamashii_icon, "Tamashii", context.getString(R.string.tamashii_intro), "$MARKET_DETAIL_SCHEME$TAMASHII")
         )
 
         if (packageName.isNotBlank()) {
