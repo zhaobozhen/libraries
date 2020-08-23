@@ -1,4 +1,4 @@
-package rikka.core
+package com.absinthe.libraries.me
 
 import org.junit.Test
 

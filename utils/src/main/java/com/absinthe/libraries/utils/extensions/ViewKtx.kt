@@ -1,4 +1,4 @@
-package com.absinthe.libraries.extensions
+package com.absinthe.libraries.utils.extensions
 
 import android.content.res.Resources
 import android.view.View

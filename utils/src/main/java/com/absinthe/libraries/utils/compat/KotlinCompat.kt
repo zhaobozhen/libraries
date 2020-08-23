@@ -1,4 +1,4 @@
-package com.absinthe.libraries.compat
+package com.absinthe.libraries.utils.compat
 
 import android.annotation.SuppressLint
 import androidx.appcompat.widget.TintTypedArray

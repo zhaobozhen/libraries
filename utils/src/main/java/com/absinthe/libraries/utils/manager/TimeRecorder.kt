@@ -1,4 +1,4 @@
-package com.absinthe.libraries.manager
+package com.absinthe.libraries.utils.manager
 
 class TimeRecorder {
 

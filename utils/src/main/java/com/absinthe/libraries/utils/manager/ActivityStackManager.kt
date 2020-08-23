@@ -1,4 +1,4 @@
-package com.absinthe.libraries.manager
+package com.absinthe.libraries.utils.manager
 
 import android.app.Activity
 import android.os.Process

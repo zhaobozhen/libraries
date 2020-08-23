@@ -36,8 +36,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly "androidx.appcompat:appcompat:$androidx_appcompat_version"
     implementation "androidx.core:core-ktx:$androidx_core_version"
-    compileOnly "com.drakeet.about:about:$drakeet_about_page_version"
-    compileOnly "com.google.android.material:material:$google_material_component_version"
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
@@ -49,7 +47,7 @@ project.ext {
     mavLibraryDescription = 'My utils.'
 }
 
-group = 'com.absinthe.libraries'
+group = 'com.absinthe.libraries.utils'
 version = android.defaultConfig.versionName
 
 apply from: rootProject.file('publish.gradle')

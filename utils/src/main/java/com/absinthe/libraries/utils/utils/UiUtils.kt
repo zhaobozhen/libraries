@@ -1,4 +1,4 @@
-package com.absinthe.libraries.utils
+package com.absinthe.libraries.utils.utils
 
 import android.app.Activity
 import android.content.ContentResolver
@@ -11,8 +11,8 @@ import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
-import com.absinthe.libraries.R
-import com.absinthe.libraries.extensions.dp
+import com.absinthe.libraries.utils.R
+import com.absinthe.libraries.utils.extensions.dp
 
 object UiUtils {
 

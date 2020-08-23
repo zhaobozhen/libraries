@@ -42,7 +42,7 @@ project.ext {
     mavLibraryDescription = 'All about me.'
 }
 
-group = 'com.absinthe.libraries'
+group = 'com.absinthe.libraries.me'
 version = android.defaultConfig.versionName
 
 apply from: rootProject.file('publish.gradle')

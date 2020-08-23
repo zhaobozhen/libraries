@@ -1,4 +1,4 @@
-package com.absinthe.libraries.extensions
+package com.absinthe.libraries.utils.extensions
 
 import android.util.Log
 

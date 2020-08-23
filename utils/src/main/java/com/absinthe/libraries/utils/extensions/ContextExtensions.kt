@@ -1,4 +1,4 @@
-package com.absinthe.libraries.extensions
+package com.absinthe.libraries.utils.extensions
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -18,8 +18,8 @@ import androidx.annotation.*
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.TintTypedArray
 import androidx.core.content.res.ResourcesCompat
-import com.absinthe.libraries.R
-import com.absinthe.libraries.compat.use
+import com.absinthe.libraries.utils.R
+import com.absinthe.libraries.utils.compat.use
 
 val Context.activity: Activity?
     get() {
