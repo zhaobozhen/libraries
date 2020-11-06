@@ -1,8 +1,9 @@
+@file:Suppress("DEPRECATION")
+
 package com.absinthe.libraries.utils.utils
 
 import android.app.Activity
 import android.content.ContentResolver
-import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
@@ -10,49 +11,44 @@ import android.os.Build
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
+import android.view.Window
+import android.view.WindowInsetsController
 import android.view.WindowManager
+import androidx.core.view.WindowCompat
 import com.absinthe.libraries.utils.R
 import com.absinthe.libraries.utils.extensions.dp
 
 object UiUtils {
 
-    fun setSystemBarStyle(activity: Activity) {
-        if (isDarkMode(activity)) {
-            activity.window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        } else {
-            activity.window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            or WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+    fun setSystemBarStyle(window: Window) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.window.decorView.systemUiVisibility = (
-                        activity.window.decorView.systemUiVisibility
-                                or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-            }
-            if (getNavBarHeight(activity.contentResolver) > 20.dp) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    activity.window.decorView.systemUiVisibility = (
-                            activity.window.decorView.systemUiVisibility
-                                    or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
+        if (!isDarkMode()) {
+            window.decorView.systemUiVisibility =
+                    window.decorView.systemUiVisibility or WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.insetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                window.insetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS, WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.decorView.systemUiVisibility = (
+                            window.decorView.systemUiVisibility
+                                    or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
+                }
+                if (getNavBarHeight(Utility.getAppContext().contentResolver) > 20.dp) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        window.decorView.systemUiVisibility = (
+                                window.decorView.systemUiVisibility
+                                        or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
+                    }
                 }
             }
         }
-        setSystemBarTransparent(activity)
+        setSystemBarTransparent(window)
     }
 
-    fun setSystemBarTransparent(activity: Activity) {
-        val window = activity.window
-        val view = window.decorView
-        val flag = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        view.systemUiVisibility = view.systemUiVisibility or flag
-
+    fun setSystemBarTransparent(window: Window) {
         window.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
@@ -62,8 +58,8 @@ object UiUtils {
         }
     }
 
-    fun isDarkMode(context: Context): Boolean {
-        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+    fun isDarkMode(): Boolean {
+        return when (Utility.getAppContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> true
             Configuration.UI_MODE_NIGHT_NO -> false
             else -> false
