@@ -21,7 +21,11 @@ import com.absinthe.libraries.utils.extensions.dp
 object UiUtils {
 
     fun setSystemBarStyle(window: Window) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or (
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
 
         if (!isDarkMode()) {
             window.decorView.systemUiVisibility =
