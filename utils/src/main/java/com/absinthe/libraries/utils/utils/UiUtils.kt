@@ -12,9 +12,7 @@ import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
 import android.view.Window
-import android.view.WindowInsetsController
 import android.view.WindowManager
-import androidx.core.view.WindowCompat
 import com.absinthe.libraries.utils.R
 import com.absinthe.libraries.utils.extensions.dp
 
@@ -31,21 +29,16 @@ object UiUtils {
             window.decorView.systemUiVisibility =
                     window.decorView.systemUiVisibility or WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                window.insetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-                window.insetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS, WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = (
+                        window.decorView.systemUiVisibility
+                                or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
+            }
+            if (getNavBarHeight(Utility.getAppContext().contentResolver) > 20.dp) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     window.decorView.systemUiVisibility = (
                             window.decorView.systemUiVisibility
-                                    or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-                }
-                if (getNavBarHeight(Utility.getAppContext().contentResolver) > 20.dp) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        window.decorView.systemUiVisibility = (
-                                window.decorView.systemUiVisibility
-                                        or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
-                    }
+                                    or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
                 }
             }
         }
