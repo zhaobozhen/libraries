@@ -13,12 +13,13 @@ import android.util.TypedValue
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatDelegate
 import com.absinthe.libraries.utils.R
 import com.absinthe.libraries.utils.extensions.dp
 
 object UiUtils {
 
-    fun setSystemBarStyle(window: Window) {
+    fun setSystemBarStyle(window: Window, needLightStatusBar: Boolean = true) {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -27,7 +28,7 @@ object UiUtils {
             window.decorView.systemUiVisibility =
                     window.decorView.systemUiVisibility or WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && needLightStatusBar) {
                 window.decorView.systemUiVisibility = (
                         window.decorView.systemUiVisibility
                                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
@@ -54,6 +55,15 @@ object UiUtils {
     }
 
     fun isDarkMode(): Boolean {
+        return when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> true
+            AppCompatDelegate.MODE_NIGHT_NO -> false
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY -> isDarkModeOnSystem()
+            else -> false
+        }
+    }
+
+    fun isDarkModeOnSystem(): Boolean {
         return when (Utility.getAppContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> true
             Configuration.UI_MODE_NIGHT_NO -> false
