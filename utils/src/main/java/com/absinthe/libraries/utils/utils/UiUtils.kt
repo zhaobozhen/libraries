@@ -3,12 +3,10 @@
 package com.absinthe.libraries.utils.utils
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
-import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
@@ -35,7 +33,7 @@ object UiUtils {
                         window.decorView.systemUiVisibility
                                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
             }
-            if (getNavBarHeight(Utility.getAppContext().contentResolver) > 20.dp) {
+            if (getNavBarHeight(window.windowManager) > 20.dp) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     window.decorView.systemUiVisibility = (
                             window.decorView.systemUiVisibility
@@ -79,28 +77,8 @@ object UiUtils {
         return resources.getDimensionPixelSize(resourceId)
     }
 
-    fun getNavBarHeight(contentResolver: ContentResolver): Int {
-        //Full screen adaption
-        if (Settings.Global.getInt(contentResolver, "force_fsg_nav_bar", 0) != 0) {
-            return 20.dp
-        }
-
-        val res = Resources.getSystem()
-        val resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android")
-
-        return if (resourceId != 0) {
-            res.getDimensionPixelSize(resourceId)
-        } else {
-            0
-        }
-    }
-
-    fun getNavBarHeightNew(windowManager: WindowManager): Int {
-        val windowHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            windowManager.currentWindowMetrics.bounds.height()
-        } else {
-            windowManager.defaultDisplay.height
-        }
+    fun getNavBarHeight(windowManager: WindowManager): Int {
+        val windowHeight = windowManager.defaultDisplay.height
         var windowFullHeight = 0
         try {
             val dm = DisplayMetrics()
@@ -111,7 +89,7 @@ object UiUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return (windowFullHeight - windowHeight).coerceAtLeast(0)
+        return (windowFullHeight - windowHeight - getStatusBarHeight()).coerceAtLeast(0)
     }
 
     fun getActionBarSize(activity: Activity): Int {
