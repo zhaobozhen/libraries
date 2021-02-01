@@ -9,6 +9,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
 import android.view.Window
@@ -16,6 +17,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.absinthe.libraries.utils.R
 import com.absinthe.libraries.utils.extensions.dp
+
 
 object UiUtils {
 
@@ -71,6 +73,12 @@ object UiUtils {
         }
     }
 
+    fun getStatusBarHeight(): Int {
+        val resources: Resources = Utility.getAppContext().resources
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return resources.getDimensionPixelSize(resourceId)
+    }
+
     fun getNavBarHeight(contentResolver: ContentResolver): Int {
         //Full screen adaption
         if (Settings.Global.getInt(contentResolver, "force_fsg_nav_bar", 0) != 0) {
@@ -85,6 +93,25 @@ object UiUtils {
         } else {
             0
         }
+    }
+
+    fun getNavBarHeightNew(windowManager: WindowManager): Int {
+        val windowHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowManager.currentWindowMetrics.bounds.height()
+        } else {
+            windowManager.defaultDisplay.height
+        }
+        var windowFullHeight = 0
+        try {
+            val dm = DisplayMetrics()
+            val klass = Class.forName("android.view.Display")
+            val method = klass.getMethod("getRealMetrics", DisplayMetrics::class.java)
+            method.invoke(windowManager.defaultDisplay, dm)
+            windowFullHeight = dm.heightPixels
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return (windowFullHeight - windowHeight).coerceAtLeast(0)
     }
 
     fun getActionBarSize(activity: Activity): Int {
