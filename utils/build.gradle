@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion target_sdk
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion target_sdk
         versionCode 1
         versionName absinthe_utils_version

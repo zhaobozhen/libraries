@@ -14,7 +14,6 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.absinthe.libraries.utils.R
-import com.absinthe.libraries.utils.extensions.dp
 
 
 object UiUtils {
@@ -33,7 +32,7 @@ object UiUtils {
                         window.decorView.systemUiVisibility
                                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
             }
-            if (getNavBarHeight(window.windowManager) > 20.dp) {
+            if (window.decorView.rootWindowInsets?.systemWindowInsetBottom ?: 0 >= Resources.getSystem().displayMetrics.density * 40) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     window.decorView.systemUiVisibility = (
                             window.decorView.systemUiVisibility
@@ -75,6 +74,12 @@ object UiUtils {
         val resources: Resources = Utility.getAppContext().resources
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
         return resources.getDimensionPixelSize(resourceId)
+    }
+
+    fun getStatusBarHeightPx(): Int {
+        val resources: Resources = Utility.getAppContext().resources
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return resources.getDimension(resourceId).toInt()
     }
 
     fun getNavBarHeight(windowManager: WindowManager): Int {
