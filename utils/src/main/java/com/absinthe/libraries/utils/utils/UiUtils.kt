@@ -14,6 +14,8 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.absinthe.libraries.utils.R
+import com.absinthe.libraries.utils.manager.NOT_MEASURED
+import com.absinthe.libraries.utils.manager.SystemBarManager
 
 
 object UiUtils {
@@ -71,9 +73,13 @@ object UiUtils {
     }
 
     fun getStatusBarHeight(): Int {
-        val resources: Resources = Utility.getAppContext().resources
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        return resources.getDimensionPixelSize(resourceId)
+        return if (SystemBarManager.statusBarSize == NOT_MEASURED) {
+            val resources: Resources = Utility.getAppContext().resources
+            val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            SystemBarManager.statusBarSize
+        }
     }
 
     fun getStatusBarHeightPx(): Int {
@@ -82,6 +88,7 @@ object UiUtils {
         return resources.getDimension(resourceId).toInt()
     }
 
+    @Deprecated("Use SystemBarManager#navigationBarSize instead")
     fun getNavBarHeight(windowManager: WindowManager): Int {
         val windowHeight = windowManager.defaultDisplay.height
         var windowFullHeight = 0
