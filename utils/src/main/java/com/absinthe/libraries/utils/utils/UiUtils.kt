@@ -34,7 +34,7 @@ object UiUtils {
                         window.decorView.systemUiVisibility
                                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
             }
-            if (window.decorView.rootWindowInsets?.systemWindowInsetBottom ?: 0 >= Resources.getSystem().displayMetrics.density * 40) {
+            if (SystemBarManager.navigationBarSize >= Resources.getSystem().displayMetrics.density * 40) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     window.decorView.systemUiVisibility = (
                             window.decorView.systemUiVisibility
