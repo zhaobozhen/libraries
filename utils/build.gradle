@@ -1,5 +1,8 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id('com.android.library')
+    id('com.vanniktech.maven.publish')
+    id('kotlin-android')
+}
 
 android {
     compileSdkVersion target_sdk
@@ -38,17 +41,12 @@ dependencies {
     compileOnly "androidx.appcompat:appcompat:$androidx_appcompat_version"
     implementation "androidx.core:core-ktx:$androidx_core_version"
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 
-project.ext {
-    mavProjectName = 'com.absinthe.libraries:utils'
-    mavLibraryDescription = 'My utils.'
+ext {
+    POM_NAME = "Absinthe Utils"
+    POM_DESCRIPTION = "Utils"
 }
-
-group = 'com.absinthe.libraries.utils'
-version = android.defaultConfig.versionName
-
-apply from: rootProject.file('publish.gradle')

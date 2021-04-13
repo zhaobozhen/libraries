@@ -7,10 +7,12 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
+        classpath "com.android.tools.build:gradle:${gradle_plugin_version}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray_plugin_version"
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
+        // For Kotlin projects, you need to add Dokka.
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -29,6 +31,47 @@ allprojects {
     }
 }
 
+subprojects {
+    afterEvaluate {
+        if (plugins.hasPlugin('com.vanniktech.maven.publish')) {
+            if (it.parent == rootProject) {
+                group = "${groupIdBase}.${it.name}"
+            } else {
+                group = "${groupIdBase}.${it.parent.name}"
+            }
+            version = android.defaultConfig.versionName
+            println("${it.displayName}: ${group}:${it.name}:${version}")
+
+            mavenPublish {
+                nexus {
+                    baseUrl = "https://s01.oss.sonatype.org"
+                    stagingProfile = "life.absinthe"
+                }
+            }
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    groupIdBase = "life.absinthe.libraries"
+
+    POM_INCEPTION_YEAR = "2020"
+    POM_PACKAGING = "aar"
+
+    POM_URL = "https://github.com/zhaobozhen/libraries"
+    POM_SCM_URL = "https://github.com/zhaobozhen/libraries"
+    POM_SCM_CONNECTION = "scm:git@github.com:zhaobozhen/libraries.git"
+    POM_SCM_DEV_CONNECTION = "scm:git@github.com:zhaobozhen/libraries.git"
+
+    POM_LICENCE_NAME = "MIT License"
+    POM_LICENCE_URL = "https://github.com/zhaobozhen/libraries/blob/master/LICENSE"
+    POM_LICENCE_DIST = "repo"
+
+    POM_DEVELOPER_ID = "absinthe"
+    POM_DEVELOPER_NAME = "Absinthe"
+    POM_DEVELOPER_URL = "https://github.com/zhaobozhen"
 }

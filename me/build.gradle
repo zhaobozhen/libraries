@@ -1,5 +1,8 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id('com.android.library')
+    id('com.vanniktech.maven.publish')
+    id('kotlin-android')
+}
 
 android {
     compileSdkVersion target_sdk
@@ -33,17 +36,12 @@ dependencies {
     compileOnly "com.drakeet.about:about:$drakeet_about_page_version"
     compileOnly "com.google.android.material:material:$google_material_component_version"
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 
-project.ext {
-    mavProjectName = 'com.absinthe.libraries:me'
-    mavLibraryDescription = 'All about me.'
+ext {
+    POM_NAME = "Absinthe Me"
+    POM_DESCRIPTION = "Me"
 }
-
-group = 'com.absinthe.libraries.me'
-version = android.defaultConfig.versionName
-
-apply from: rootProject.file('publish.gradle')
