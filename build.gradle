@@ -4,6 +4,7 @@ buildscript {
     apply from: 'manifest.gradle'
     repositories {
         maven { url 'https://jitpack.io' }
+        jcenter()
         google()
     }
     dependencies {
@@ -22,9 +23,9 @@ buildscript {
 allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
+        jcenter()
         mavenLocal()
         google()
-        maven { url 'https://jitpack.io' }
     }
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')
