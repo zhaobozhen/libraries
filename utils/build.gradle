@@ -4,7 +4,9 @@ plugins {
     id('com.github.dcendents.android-maven')
 }
 
-group = 'com.github.zhaobozhen'
+ext {
+    libName = "utils"
+}
 
 android {
     compileSdkVersion target_sdk

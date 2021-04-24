@@ -3,7 +3,7 @@
 buildscript {
     apply from: 'manifest.gradle'
     repositories {
-        jcenter()
+        maven { url 'https://jitpack.io' }
         google()
     }
     dependencies {
@@ -12,7 +12,7 @@ buildscript {
 
         // For Kotlin projects, you need to add Dokka.
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -21,7 +21,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url 'https://jitpack.io' }
         mavenLocal()
         google()
         maven { url 'https://jitpack.io' }
@@ -34,6 +34,45 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+subprojects {
+    tasks.withType(Javadoc).all { enabled = false }
+}
+
+ext {
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_8
+    targetCompatibilityVersion = JavaVersion.VERSION_1_8
+    compileSdkVersion = 30
+    targetSdkVersion = 30
+    minSdkVersion = 23
+    buildToolsVersion = '30.0.3'
+
+    userOrg = 'absinthe'
+    repoName = 'maven'
+    desc = 'Absinthe libraries'
+    licences = ['Apache-2.0']
+    groupId = 'com.absinthe'
+    version = '1.0.0'
+}
+
+/** Configure publishing and signing for published Java and JavaPlatform subprojects. */
+subprojects { project ->
+    if (!plugins.hasPlugin("com.github.dcendents.android-maven") && !plugins.hasPlugin("maven")) return
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.sourceFiles
+    }
+    task classesJar(type: Jar) {
+        from "$buildDir/intermediates/classes/release"
+    }
+
+    artifacts {
+        archives classesJar
+        archives sourcesJar
+    }
+}
+
 
 ext {
     groupIdBase = "life.absinthe.libraries"
