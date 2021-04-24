@@ -1,8 +1,10 @@
 plugins {
     id('com.android.library')
-    id('com.vanniktech.maven.publish')
     id('kotlin-android')
+    id('com.github.dcendents.android-maven')
 }
+
+group = 'com.github.zhaobozhen'
 
 android {
     compileSdkVersion target_sdk
@@ -44,9 +46,4 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-}
-
-ext {
-    POM_NAME = "Absinthe Utils"
-    POM_DESCRIPTION = "Utils"
 }
