@@ -1,4 +1,4 @@
-package life.absinthe.libraries.me
+package com.absinthe.libraries.me
 
 import android.content.Context
 import com.drakeet.about.Contributor

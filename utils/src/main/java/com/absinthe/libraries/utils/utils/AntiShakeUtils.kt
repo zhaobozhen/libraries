@@ -1,8 +1,8 @@
-package life.absinthe.libraries.utils.utils
+package com.absinthe.libraries.utils.utils
 
 import android.view.View
 import androidx.annotation.IntRange
-import life.absinthe.libraries.utils.R
+import com.absinthe.libraries.utils.R
 
 /**
  * Anti-Shake click utils

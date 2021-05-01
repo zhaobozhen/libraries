@@ -1,10 +1,10 @@
-package life.absinthe.libraries.utils.manager
+package com.absinthe.libraries.utils.manager
 
 import android.graphics.Rect
 import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.Window
-import life.absinthe.libraries.utils.utils.UiUtils
+import com.absinthe.libraries.utils.utils.UiUtils
 
 const val NOT_MEASURED = -1
 

@@ -1,8 +1,8 @@
-package life.absinthe.libraries.utils.extensions
+package com.absinthe.libraries.utils.extensions
 
 import androidx.annotation.*
 import androidx.fragment.app.Fragment
-import life.absinthe.libraries.utils.extensions.*
+import com.absinthe.libraries.utils.extensions.*
 
 fun Fragment.getAnimation(@AnimRes id: Int) = requireContext().getAnimation(id)
 

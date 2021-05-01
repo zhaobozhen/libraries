@@ -1,4 +1,4 @@
-package life.absinthe.libraries.utils
+package com.absinthe.libraries.utils
 
 import org.junit.Test
 

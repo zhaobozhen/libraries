@@ -1,4 +1,4 @@
-package life.absinthe.libraries.utils.utils
+package com.absinthe.libraries.utils.utils
 
 import android.annotation.SuppressLint
 import android.app.Application

@@ -1,4 +1,4 @@
-package life.absinthe.libraries.utils.interfaces
+package com.absinthe.libraries.utils.interfaces
 
 interface WindowFocusListenable {
     fun onWindowFocusChanged(hasFocus: Boolean)

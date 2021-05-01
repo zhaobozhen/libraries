@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package life.absinthe.libraries.utils.utils
+package com.absinthe.libraries.utils.utils
 
 import android.app.Activity
 import android.content.res.Configuration
@@ -13,9 +13,9 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
-import life.absinthe.libraries.utils.R
-import life.absinthe.libraries.utils.manager.NOT_MEASURED
-import life.absinthe.libraries.utils.manager.SystemBarManager
+import com.absinthe.libraries.utils.R
+import com.absinthe.libraries.utils.manager.NOT_MEASURED
+import com.absinthe.libraries.utils.manager.SystemBarManager
 
 
 object UiUtils {

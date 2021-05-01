@@ -76,7 +76,7 @@ subprojects { project ->
 
 
 ext {
-    groupIdBase = "life.absinthe.libraries"
+    groupIdBase = "com.absinthe.libraries"
 
     POM_INCEPTION_YEAR = "2020"
     POM_PACKAGING = "aar"

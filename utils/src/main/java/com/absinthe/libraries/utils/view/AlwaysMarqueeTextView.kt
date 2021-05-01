@@ -1,4 +1,4 @@
-package life.absinthe.libraries.view
+package com.absinthe.libraries.view
 
 import android.content.Context
 import android.text.TextUtils
