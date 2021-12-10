@@ -83,4 +83,40 @@ public class XiaomiUtilities {
     intent.putExtra("extra_pkgname", Utility.INSTANCE.getAppContext().getPackageName());
     return intent;
   }
+
+  private static Class<?> clazz;
+
+  static {
+    try {
+      clazz = Class.forName("miui.os.Build");
+    } catch (ClassNotFoundException e) {
+      clazz = null;
+    }
+  }
+
+  private boolean isMiuiStableBuild() {
+    if (clazz == null) return false;
+    try {
+      Field stableField = clazz.getField("IS_STABLE_VERSION");
+      Boolean isStable = (Boolean) stableField.get(null);
+      return isStable != null && isStable;
+    } catch (NoSuchFieldException | ClassCastException | IllegalAccessException e) {
+      return false;
+    }
+  }
+
+  private boolean isMiuiAlphaBuild() {
+    if (clazz == null) return false;
+    try {
+      Field alphaField = clazz.getField("IS_ALPHA_BUILD");
+      Boolean isAlpha = (Boolean) alphaField.get(null);
+      return isAlpha != null && isAlpha;
+    } catch (NoSuchFieldException | ClassCastException | IllegalAccessException e) {
+      return false;
+    }
+  }
+
+  private boolean isMiuiDevelopBuild() {
+    return !isMiuiStableBuild() && !isMiuiAlphaBuild();
+  }
 }
