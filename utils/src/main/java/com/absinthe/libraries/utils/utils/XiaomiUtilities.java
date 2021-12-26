@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class XiaomiUtilities {
