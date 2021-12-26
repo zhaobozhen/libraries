@@ -3,8 +3,7 @@
 buildscript {
     apply from: 'manifest.gradle'
     repositories {
-        maven { url 'https://jitpack.io' }
-        jcenter()
+        gradlePluginPortal()
         google()
     }
     dependencies {
@@ -23,8 +22,7 @@ buildscript {
 allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
-        jcenter()
-        mavenLocal()
+        mavenCentral()
         google()
     }
     tasks.withType(Javadoc) {
@@ -43,10 +41,10 @@ subprojects {
 ext {
     sourceCompatibilityVersion = JavaVersion.VERSION_1_8
     targetCompatibilityVersion = JavaVersion.VERSION_1_8
-    compileSdkVersion = 30
-    targetSdkVersion = 30
+    compileSdkVersion = 31
+    targetSdkVersion = 31
     minSdkVersion = 23
-    buildToolsVersion = '30.0.3'
+    buildToolsVersion = '31.0.0'
 
     userOrg = 'absinthe'
     repoName = 'maven'
