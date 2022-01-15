@@ -52,6 +52,9 @@ import java.util.Set;
 
 import static org.jf.dexlib2.writer.DexWriter.NO_OFFSET;
 
+import android.os.SystemClock;
+import android.util.Log;
+
 public class DexBackedDexFile implements DexFile {
 
     private final DexBuffer dexBuffer;
@@ -78,13 +81,19 @@ public class DexBackedDexFile implements DexFile {
         dexBuffer = new DexBuffer(buf, offset);
         dataBuffer = new DexBuffer(buf, offset + getBaseDataOffset());
 
+        long time1 = SystemClock.elapsedRealtime();
         int dexVersion = getVersion(buf, offset, verifyMagic);
+        long time2 = SystemClock.elapsedRealtime();
+        Log.e("DexBackedDexFile", "getVersion: time2 - time1 = " + (time2-time1));
 
+        time1 = SystemClock.elapsedRealtime();
         if (opcodes == null) {
             this.opcodes = getDefaultOpcodes(dexVersion);
         } else {
             this.opcodes = opcodes;
         }
+        time2 = SystemClock.elapsedRealtime();
+        Log.e("DexBackedDexFile", "getDefaultOpcodes: time2 - time1 = " + (time2-time1));
 
         stringCount = dexBuffer.readSmallUint(HeaderItem.STRING_COUNT_OFFSET);
         stringStartOffset = dexBuffer.readSmallUint(HeaderItem.STRING_START_OFFSET);
