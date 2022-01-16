@@ -16,7 +16,7 @@ ext {
 
     drakeet_about_page_version = '2.5.0'
 
-    absinthe_me_version = "1.0.6"
+    absinthe_me_version = "1.0.7"
     absinthe_utils_version = "1.2.1"
     absinthe_axml_version = "1.0.1"
     absinthe_dexlib2_version = "1.0.0"

@@ -4,4 +4,5 @@
   <string name="lc_intro">An app which can look at the CPU architecture of apps in your device.</string>
   <string name="anywhere_intro">An app which can collect some actions into a page.</string>
   <string name="tamashii_intro">\?</string>
+  <string name="little_processy_intro">\?</string>
 </resources>
