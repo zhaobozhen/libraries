@@ -26,7 +26,7 @@ object Absinthe {
                 Contributor(R.drawable.kage_icon, "Kage(Beta)", context.getString(R.string.kage_intro), "$MARKET_DETAIL_SCHEME$KAGE"),
                 Contributor(R.drawable.libchecker_icon, "LibChecker", context.getString(R.string.lc_intro), "$MARKET_DETAIL_SCHEME$LIBCHECKER"),
                 //Contributor(R.drawable.tamashii_icon, "Tamashii", context.getString(R.string.tamashii_intro)),
-                Contributor(R.drawable.little_processy_icon, "LittleProcessy", context.getString(R.string.little_processy_intro))
+                Contributor(R.drawable.little_processy_icon, "LittleProcessy", context.getString(R.string.little_processy_intro), "$MARKET_DETAIL_SCHEME$LITTLE_PROCESSY")
         )
 
         if (packageName.isNotBlank()) {
