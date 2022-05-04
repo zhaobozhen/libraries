@@ -2,9 +2,10 @@ package com.absinthe.libraries.utils.view
 
 import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.DrawableWrapper
 
 /** Like [ClipDrawable], but allows clipping in terms of pixels instead of percentage. */
-internal class HeightClipDrawable(delegate: Drawable) : DrawableWrapperCompat(delegate) {
+class HeightClipDrawable(delegate: Drawable) : DrawableWrapper(delegate) {
     var clippedHeight: Int? = null
         set(value) {
             field = value
