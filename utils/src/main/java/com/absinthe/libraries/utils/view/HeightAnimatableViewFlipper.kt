@@ -7,7 +7,6 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
 import android.widget.ViewFlipper
@@ -29,14 +28,8 @@ open class HeightAnimatableViewFlipper(context: Context) : ViewFlipper2(context)
     private var clipBounds2: Rect? = null // Because View#clipBounds creates a new Rect on every call.
     private var animator: ValueAnimator = ObjectAnimator()
 
-    fun show(
-        view: View,
-        forward: Boolean
-    ) {
+    fun show(view: View) {
         enqueueAnimation {
-            val index = if (forward) childCount else 0
-            val params = view.layoutParams ?: generateDefaultLayoutParams()
-            super.addView(view, index, params)
             if (childCount == 1) {
                 return@enqueueAnimation
             }
@@ -45,16 +38,16 @@ open class HeightAnimatableViewFlipper(context: Context) : ViewFlipper2(context)
             setDisplayedChild(
                 view,
                 inAnimator = {
-                    it.translationX = if (forward) width.toFloat() else -(width.toFloat() * 0.25f)
+                    it.alpha = 0f
                     it.animate()
-                        .translationX(0f)
+                        .alpha(1f)
                         .setDuration(animationDuration)
                         .setInterpolator(animationInterpolator)
                 },
                 outAnimator = {
-                    it.translationX = 0f
+                    it.alpha = 1f
                     it.animate()
-                        .translationX(if (!forward) width.toFloat() else -(width.toFloat() * 0.25f))
+                        .alpha(0f)
                         .setDuration(animationDuration)
                         .setInterpolator(animationInterpolator)
                 }
@@ -64,21 +57,10 @@ open class HeightAnimatableViewFlipper(context: Context) : ViewFlipper2(context)
                 animateHeight(
                     from = prevView.height + verticalPadding,
                     to = view.height + verticalPadding,
-                    onEnd = { removeView(prevView) }
+                    onEnd = { /*removeView(prevView)*/ }
                 )
             }
         }
-    }
-
-    open fun goForward(toView: View) =
-        show(toView, forward = true)
-
-    open fun goBack(toView: View) =
-        show(toView, forward = false)
-
-    override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-        child.layoutParams = params
-        show(child, forward = true)
     }
 
     override fun generateDefaultLayoutParams(): LayoutParams {
