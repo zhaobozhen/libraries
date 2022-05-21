@@ -7,7 +7,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${gradle_plugin_version}"
+        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // For Kotlin projects, you need to add Dokka.
@@ -39,12 +39,11 @@ subprojects {
 }
 
 ext {
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_8
-    targetCompatibilityVersion = JavaVersion.VERSION_1_8
-    compileSdkVersion = 31
-    targetSdkVersion = 31
+    sourceCompatibilityVersion = JavaVersion.VERSION_11
+    targetCompatibilityVersion = JavaVersion.VERSION_11
+    compileSdkVersion = 32
+    targetSdkVersion = 32
     minSdkVersion = 23
-    buildToolsVersion = '31.0.0'
 
     userOrg = 'absinthe'
     repoName = 'maven'
@@ -53,25 +52,6 @@ ext {
     groupId = 'com.absinthe'
     version = '1.0.0'
 }
-
-/** Configure publishing and signing for published Java and JavaPlatform subprojects. */
-subprojects { project ->
-    if (!plugins.hasPlugin("com.github.dcendents.android-maven") && !plugins.hasPlugin("maven")) return
-
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.sourceFiles
-    }
-    task classesJar(type: Jar) {
-        from "$buildDir/intermediates/classes/release"
-    }
-
-    artifacts {
-        archives classesJar
-        archives sourcesJar
-    }
-}
-
 
 ext {
     groupIdBase = "com.absinthe.libraries"
