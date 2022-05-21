@@ -85,7 +85,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
           WindowInsetsControllerCompat(it, it.decorView)
             .isAppearanceLightNavigationBars = !UiUtils.isDarkMode()
 
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          if (Build.VERSION.SDK_INT >= 32) {
             it.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
             it.attributes.blurBehindRadius = 64
             it.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

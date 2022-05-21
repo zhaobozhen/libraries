@@ -3,7 +3,7 @@ ext {
     kotlin_version = '1.6.21'
     kotlin_coroutines_version = '1.5.0'
 
-    target_sdk = 32
+    target_sdk = 30
 
     androidx_annotation_version = "1.2.0"
     androidx_appcompat_version = '1.4.1'
