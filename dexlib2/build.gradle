@@ -36,7 +36,6 @@ android {
                 "-XXLanguage:+InlineClasses",
         ]
     }
-    buildToolsVersion '30.0.3'
 }
 
 configurations {
@@ -50,7 +49,7 @@ dependencies {
     compileOnly "androidx.appcompat:appcompat:$androidx_appcompat_version"
     implementation "androidx.core:core-ktx:$androidx_core_version"
 
-    implementation 'com.google.guava:guava:27.1-android'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     dx 'com.google.android.tools:dx:1.7'
