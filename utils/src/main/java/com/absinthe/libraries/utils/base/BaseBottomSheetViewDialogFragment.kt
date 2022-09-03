@@ -112,7 +112,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     behavior.addBottomSheetCallback(bottomSheetCallback)
     root.addOnLayoutChangeListener(this)
 
-    if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    if (isLandscape()) {
       root.post {
         Class.forName(behavior::class.java.name).apply {
           getDeclaredMethod("setStateInternal", Int::class.java).apply {
@@ -212,5 +212,10 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     if (newHeight <= maxPeekSize || maxPeekSize == 0) {
       behavior.peekHeight = newHeight
     }
+  }
+
+  private fun isLandscape(): Boolean {
+    return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ||
+            resources.displayMetrics.widthPixels >= resources.displayMetrics.heightPixels
   }
 }
