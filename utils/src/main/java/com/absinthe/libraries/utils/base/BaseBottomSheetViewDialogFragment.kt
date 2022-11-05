@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowManager
 import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowCompat
@@ -112,12 +113,14 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     behavior.addBottomSheetCallback(bottomSheetCallback)
     root.addOnLayoutChangeListener(this)
 
-    if (isLandscape()) {
-      root.post {
-        Class.forName(behavior::class.java.name).apply {
-          getDeclaredMethod("setStateInternal", Int::class.java).apply {
-            isAccessible = true
-            invoke(behavior, BottomSheetBehavior.STATE_EXPANDED)
+    activity?.window?.let {
+      if (isLandscape(it)) {
+        root.post {
+          Class.forName(behavior::class.java.name).apply {
+            getDeclaredMethod("setStateInternal", Int::class.java).apply {
+              isAccessible = true
+              invoke(behavior, BottomSheetBehavior.STATE_EXPANDED)
+            }
           }
         }
       }
@@ -214,8 +217,8 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     }
   }
 
-  private fun isLandscape(): Boolean {
-    return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ||
-            resources.displayMetrics.widthPixels >= resources.displayMetrics.heightPixels
+  private fun isLandscape(window: Window): Boolean {
+    val view = window.decorView
+    return view.width >= view.height
   }
 }
