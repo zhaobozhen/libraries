@@ -37,6 +37,9 @@ android {
                 "-XXLanguage:+InlineClasses",
         ]
     }
+    buildFeatures {
+        buildConfig false
+    }
 }
 
 configurations {
