@@ -11,7 +11,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // For Kotlin projects, you need to add Dokka.
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -41,8 +41,8 @@ subprojects {
 ext {
     sourceCompatibilityVersion = JavaVersion.VERSION_11
     targetCompatibilityVersion = JavaVersion.VERSION_11
-    compileSdkVersion = 32
-    targetSdkVersion = 32
+    compileSdkVersion = 33
+    targetSdkVersion = 33
     minSdkVersion = 23
 
     userOrg = 'absinthe'

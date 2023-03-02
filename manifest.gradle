@@ -1,21 +1,15 @@
 ext {
-    gradle_plugin_version = '7.2.0'
-    kotlin_version = '1.6.21'
-    kotlin_coroutines_version = '1.5.0'
+    gradle_plugin_version = '7.4.2'
+    kotlin_version = '1.8.10'
 
-    androidx_annotation_version = "1.2.0"
-    androidx_appcompat_version = '1.4.1'
-    androidx_core_version = '1.7.0'
-    androidx_fragment_version = "1.2.4"
-    androidx_interpolator_version = "1.0.0"
-    androidx_recyclerview_version = "1.1.0"
-    androidx_swiperefreshlayout_version = "1.1.0"
-    google_material_component_version = '1.6.0'
+    androidx_appcompat_version = '1.6.1'
+    androidx_core_version = '1.9.0'
+    google_material_component_version = '1.8.0'
 
-    drakeet_about_page_version = '2.5.1'
+    drakeet_about_page_version = '2.5.2'
 
     absinthe_me_version = "1.0.7"
-    absinthe_utils_version = "1.2.1"
+    absinthe_utils_version = "1.2.2"
     absinthe_axml_version = "1.0.1"
     absinthe_dexlib2_version = "1.0.0"
 }
