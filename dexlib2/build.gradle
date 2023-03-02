@@ -9,8 +9,10 @@ ext {
 }
 
 android {
+    namespace "com.absinthe.libraries.dexlib2"
     compileSdkVersion 33
     defaultConfig {
+        applicationId "com.absinthe.libraries.dexlib2"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
