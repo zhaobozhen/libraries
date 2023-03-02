@@ -9,8 +9,10 @@ ext {
 }
 
 android {
+    namespace "com.absinthe.libraries.me"
     compileSdkVersion 33
     defaultConfig {
+        applicationId "com.absinthe.libraries.me"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
