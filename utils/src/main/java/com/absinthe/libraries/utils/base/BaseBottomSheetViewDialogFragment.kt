@@ -3,7 +3,6 @@ package com.absinthe.libraries.utils.base
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.Dialog
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -116,12 +115,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     activity?.window?.let {
       if (isLandscape(it)) {
         root.post {
-          Class.forName(behavior::class.java.name).apply {
-            getDeclaredMethod("setStateInternal", Int::class.java).apply {
-              isAccessible = true
-              invoke(behavior, BottomSheetBehavior.STATE_EXPANDED)
-            }
-          }
+          behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
       }
     }
