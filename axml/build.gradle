@@ -12,7 +12,6 @@ android {
     namespace "com.absinthe.libraries.axml"
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.absinthe.libraries.axml"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
