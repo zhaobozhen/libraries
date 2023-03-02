@@ -16,7 +16,6 @@ android {
         versionCode 1
         versionName absinthe_me_version
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
     buildTypes {
@@ -38,10 +37,6 @@ dependencies {
     api "androidx.core:core-ktx:$androidx_core_version"
     api "com.drakeet.about:about:$drakeet_about_page_version"
     api "com.google.android.material:material:$google_material_component_version"
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 afterEvaluate {
