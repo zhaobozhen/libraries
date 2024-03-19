@@ -107,7 +107,7 @@ object UiUtils {
     fun getActionBarSize(activity: Activity): Int {
         val tv = TypedValue()
 
-        return if (activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        return if (activity.theme.resolveAttribute(com.google.android.material.R.attr.actionBarSize, tv, true)) {
             TypedValue.complexToDimensionPixelSize(
                     tv.data,
                     activity.resources.displayMetrics
