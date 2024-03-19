@@ -1,1 +1,1 @@
-include ':me', ':utils', ':axml', ":dexlib2"
+include ':me', ':utils', ':axml'
