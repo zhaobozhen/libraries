@@ -167,7 +167,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
 
   private fun applyRootView(root: T) {
    root. post {
-      if (maxPeekHeightPercentage > 0f) {
+      if (maxPeekHeightPercentage >= 0f) {
         maxPeekSize = ((dialog?.window?.decorView?.height ?: 0) * maxPeekHeightPercentage).toInt()
       } else {
         throw IllegalArgumentException("maxPeekHeightPercentage must be greater than 0")
