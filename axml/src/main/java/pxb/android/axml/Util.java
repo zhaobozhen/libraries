@@ -15,6 +15,7 @@
  */
 package pxb.android.axml;
 
+import io.github.pixee.security.BoundedLineReader;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,7 +53,7 @@ public class Util {
         Map<String, String> clzMap = new HashMap<String, String>();
         BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(config), "utf8"));
         try {
-            for (String ln = r.readLine(); ln != null; ln = r.readLine()) {
+            for (String ln = BoundedLineReader.readLine(r, 5_000_000); ln != null; ln = BoundedLineReader.readLine(r, 5_000_000)) {
                 if (ln.startsWith("#") || ln.startsWith(" ")) {
                     continue;
                 }
