@@ -15,7 +15,7 @@
  */
 package pxb.android.arsc;
 
-public class ResSpec {
+public class ResSpec implements Comparable<ResSpec>{
     public int flags;
     public final int id;
     public String name;
@@ -32,5 +32,10 @@ public class ResSpec {
         } else if (!s.equals(name)) {
             throw new RuntimeException();
         }
+    }
+
+    @Override
+    public int compareTo(ResSpec o) {
+        return Integer.compare(id, o.id);
     }
 }

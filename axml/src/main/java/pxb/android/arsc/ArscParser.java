@@ -15,6 +15,8 @@
  */
 package pxb.android.arsc;
 
+import pxb.android.*;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,12 +24,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pxb.android.ResConst;
-import pxb.android.StringItems;
 
 /**
  * 
@@ -47,14 +43,7 @@ import pxb.android.StringItems;
  * <li>frameworks/base/libs/utils/ResourceTypes.cpp</li>
  * <li>frameworks/base/include/utils/ResourceTypes.h</li>
  * </ul>
- * and the cmd line <code>aapt d resources abc.apk</code> is also good for debug
- * (available in android sdk)
- * 
- * <p>
- * Todos:
- * <ul>
- * TODO add support to read styled strings
- * </ul>
+ * and the cmd line <code>aapt d resources abc.apk</code> is also good for debug (available in android sdk)
  * 
  * <p>
  * Thanks to the the following projects
@@ -69,133 +58,98 @@ import pxb.android.StringItems;
  */
 public class ArscParser implements ResConst {
 
-	private static final Logger logger = LoggerFactory.getLogger(ArscParser.class);
-	
-    /* pkg */class Chunk {
-
-        public final int headSize;
-        public final int location;
-        public final int size;
-        public final int type;
-
-        public Chunk() {
-            location = in.position();
-            type = in.getShort() & 0xFFFF;
-            headSize = in.getShort() & 0xFFFF;
-            size = in.getInt();
-            D("[%08x]type: %04x, headsize: %04x, size:%08x", location, type, headSize, size);
-        }
-    }
+    private static final boolean DEBUG = false;
 
     private static void D(String fmt, Object... args) {
-        if (logger.isTraceEnabled()) {
-            logger.trace(String.format(fmt, args));
+        if (DEBUG) {
+            System.out.println(String.format(fmt, args));
         }
     }
 
+    public static void E(String fmt, Object... args) {
+        System.err.println(String.format(fmt, args));
+    }
     /**
-     * If set, this resource has been declared public, so libraries are allowed
-     * to reference it.
+     * If set, this resource has been declared public, so libraries are allowed to reference it.
      */
     static final int ENGRY_FLAG_PUBLIC = 0x0002;
 
     /**
-     * If set, this is a complex entry, holding a set of name/value mappings. It
-     * is followed by an array of ResTable_map structures.
+     * If set, this is a complex entry, holding a set of name/value mappings. It is followed by an array of ResTable_map
+     * structures.
      */
     final static short ENTRY_FLAG_COMPLEX = 0x0001;
-    public static final int TYPE_STRING = 0x03;
 
-    private int fileSize = -1;
     private ByteBuffer in;
-    private String[] keyNamesX;
+    private StringBlock keyNamesX;
     private Pkg pkg;
     private List<Pkg> pkgs = new ArrayList<Pkg>();
-    private String[] strings;
-    private String[] typeNamesX;
+    private StringBlock strings;
+    private StringBlock typeNamesX;
 
+    public ArscParser(ByteBuffer b) {
+        this.in = b.order(ByteOrder.LITTLE_ENDIAN);
+    }
     public ArscParser(byte[] b) {
-        this.in = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN);
+        this(ByteBuffer.wrap(b));
     }
 
     public List<Pkg> parse() throws IOException {
-        if (fileSize < 0) {
-            Chunk head = new Chunk();
-            if (head.type != RES_TABLE_TYPE) {
-                throw new RuntimeException();
-            }
-            fileSize = head.size;
-            in.getInt();// packagecount
+        in.position(0);
+        /**
+         * Header for a resource table.  Its data contains a series of
+         * additional chunks:
+         *   * A ResStringPool_header containing all table values.  This string pool
+         *     contains all of the string values in the entire resource table (not
+         *     the names of entries or type identifiers however).
+         *   * One or more ResTable_package chunks.
+         *
+         * Specific entries within a resource table can be uniquely identified
+         * with a single integer as defined by the ResTable_ref structure.
+         */
+        // struct ResTable_header {
+        //   ResChunk_header header;
+        //   uint32_t packageCount
+        // }
+        ResChunk_header header = new ResChunk_header(in);
+        if (header.type != RES_TABLE_TYPE) {
+            throw new RuntimeException();
         }
+        int packageCount = in.getInt();
+
+        int savePoint = header.location + header.headSize;
+
+        // make sure ResStringPool loaded before ResTable_package
+        in.position(savePoint);
         while (in.hasRemaining()) {
-            Chunk chunk = new Chunk();
-            switch (chunk.type) {
-            case RES_STRING_POOL_TYPE:
-                strings = StringItems.read(in);
-                if (logger.isTraceEnabled()) {
-                    for (int i = 0; i < strings.length; i++) {
-                        D("STR [%08x] %s", i, strings[i]);
-                    }
-                }
+            ResChunk_header chunk = new ResChunk_header(in);
+            if (chunk.type == RES_STRING_POOL_TYPE) {
+                StringBlock sb = new StringBlock();
+                sb.read(in, chunk);
+                strings = sb;
                 break;
-            case RES_TABLE_PACKAGE_TYPE:
-                readPackage(in);
+            }
+            in.position(chunk.location + chunk.size);
+        }
+        in.position(savePoint);
+        for (int pkgIdx = 0; pkgIdx < packageCount;) {
+            ResChunk_header chunk = new ResChunk_header(in);
+            switch (chunk.type) {
+                case RES_STRING_POOL_TYPE:
+                    ;// values already read
+                    break;
+                case RES_TABLE_PACKAGE_TYPE:
+                    readPackage(in, chunk);
+                    pkgIdx++;
+                    break;
+                default:
+                    E("WARN: type 0x%04x not allowed, only ResTable_package(0x%04x) and ResStringPool_header(0x%04x) allowed", chunk.type, RES_TABLE_PACKAGE_TYPE, RES_STRING_POOL_TYPE);
+                    break;
             }
             in.position(chunk.location + chunk.size);
         }
         return pkgs;
     }
-
-    // private void readConfigFlags() {
-    // int size = in.getInt();
-    // if (size < 28) {
-    // throw new RuntimeException();
-    // }
-    // short mcc = in.getShort();
-    // short mnc = in.getShort();
-    //
-    // char[] language = new char[] { (char) in.get(), (char) in.get() };
-    // char[] country = new char[] { (char) in.get(), (char) in.get() };
-    //
-    // byte orientation = in.get();
-    // byte touchscreen = in.get();
-    // short density = in.getShort();
-    //
-    // byte keyboard = in.get();
-    // byte navigation = in.get();
-    // byte inputFlags = in.get();
-    // byte inputPad0 = in.get();
-    //
-    // short screenWidth = in.getShort();
-    // short screenHeight = in.getShort();
-    //
-    // short sdkVersion = in.getShort();
-    // short minorVersion = in.getShort();
-    //
-    // byte screenLayout = 0;
-    // byte uiMode = 0;
-    // short smallestScreenWidthDp = 0;
-    // if (size >= 32) {
-    // screenLayout = in.get();
-    // uiMode = in.get();
-    // smallestScreenWidthDp = in.getShort();
-    // }
-    //
-    // short screenWidthDp = 0;
-    // short screenHeightDp = 0;
-    //
-    // if (size >= 36) {
-    // screenWidthDp = in.getShort();
-    // screenHeightDp = in.getShort();
-    // }
-    //
-    // short layoutDirection = 0;
-    // if (size >= 38 && sdkVersion >= 17) {
-    // layoutDirection = in.getShort();
-    // }
-    //
-    // }
-
     private void readEntry(Config config, ResSpec spec) {
         D("[%08x]read ResTable_entry", in.position());
         int size = in.getShort();
@@ -203,9 +157,10 @@ public class ArscParser implements ResConst {
 
         int flags = in.getShort(); // ENTRY_FLAG_PUBLIC
         int keyStr = in.getInt();
-        spec.updateName(keyNamesX[keyStr]);
+        spec.updateName(keyNamesX.get(keyStr));
 
-        ResEntry resEntry = new ResEntry(flags, spec);
+        ResEntry resEntry = new ResEntry();
+        resEntry.isPublic = 0 != (flags & ENGRY_FLAG_PUBLIC);
 
         if (0 != (flags & ENTRY_FLAG_COMPLEX)) {
 
@@ -213,88 +168,174 @@ public class ArscParser implements ResConst {
             int count = in.getInt();
             BagValue bag = new BagValue(parent);
             for (int i = 0; i < count; i++) {
-                Map.Entry<Integer, Value> entry = new AbstractMap.SimpleEntry(in.getInt(), readValue());
+                Map.Entry<Integer, Res_value> entry = new AbstractMap.SimpleEntry(in.getInt(), readValue());
                 bag.map.add(entry);
             }
             resEntry.value = bag;
         } else {
             resEntry.value = readValue();
         }
-        config.resources.put(spec.id, resEntry);
+        config.resources.put(spec, resEntry);
     }
 
-    private void readPackage(ByteBuffer in) throws IOException {
+    /**
+     * A collection of resource data types within a package.  Followed by
+     * one or more ResTable_type and ResTable_typeSpec structures containing the
+     * entry values for each resource type.
+     */
+    private void readPackage(ByteBuffer in, ResChunk_header package_header) throws IOException {
+        // If this is a base package, its ID.  Package IDs start
+        // at 1 (corresponding to the value of the package bits in a
+        // resource identifier).  0 means this is not a base package.
+        //  uint32_t id;
         int pid = in.getInt() % 0xFF;
 
-        String name;
-        {
-            int nextPisition = in.position() + 128 * 2;
-            StringBuilder sb = new StringBuilder(32);
-            for (int i = 0; i < 128; i++) {
-                int s = in.getShort();
-                if (s == 0) {
-                    break;
-                } else {
-                    sb.append((char) s);
-                }
-            }
-            name = sb.toString();
-            in.position(nextPisition);
-        }
+        // Actual name of this package, \0-terminated.
+        // char16_t name[128];
+        String name = readFixedU16String(in);
 
         pkg = new Pkg(pid, name);
         pkgs.add(pkg);
+        // Offset to a ResStringPool_header defining the resource
+        // type symbol table.  If zero, this package is inheriting from
+        // another base package (overriding specific values in it).
+        // uint32_t typeStrings;
+        int typeStrings = in.getInt();
 
-        int typeStringOff = in.getInt();
-        int typeNameCount = in.getInt();
-        int keyStringOff = in.getInt();
-        int specNameCount = in.getInt();
+        // Last index into typeStrings that is for public use by others.
+        // uint32_t lastPublicType;
+        int lastPublicType = in.getInt();
 
+        // Offset to a ResStringPool_header defining the resource
+        // key symbol table.  If zero, this package is inheriting from
+        // another base package (overriding specific values in it).
+        // uint32_t keyStrings;
+        int keyStrings = in.getInt();
+
+        // Last index into keyStrings that is for public use by others.
+        // uint32_t lastPublicKey;
+        int lastPublicKey = in.getInt();
+
+        // 1. search for strings
         {
-            Chunk chunk = new Chunk();
-            if (chunk.type != RES_STRING_POOL_TYPE) {
-                throw new RuntimeException();
-            }
-            typeNamesX = StringItems.read(in);
-            in.position(chunk.location + chunk.size);
-        }
-        {
-            Chunk chunk = new Chunk();
-            if (chunk.type != RES_STRING_POOL_TYPE) {
-                throw new RuntimeException();
-            }
-            keyNamesX = StringItems.read(in);
-            if (logger.isTraceEnabled()) {
-                for (int i = 0; i < keyNamesX.length; i++) {
-                    D("STR [%08x] %s", i, keyNamesX[i]);
+            if(typeStrings==0){
+                E("typeStrings is 0");
+            }else {
+                in.position(package_header.location+typeStrings);
+                ResChunk_header chunk = new ResChunk_header(in);
+                if (chunk.type != RES_STRING_POOL_TYPE) {
+                    throw new RuntimeException();
                 }
+                StringBlock sb = new StringBlock();
+                sb.read(in, chunk);
+                typeNamesX = sb;
             }
-            in.position(chunk.location + chunk.size);
+        }
+        {
+            if (keyStrings == 0) {
+                E("keyStrings is 0");
+            } else {
+                in.position(package_header.location + keyStrings);
+                ResChunk_header chunk = new ResChunk_header(in);
+                if (chunk.type != RES_STRING_POOL_TYPE) {
+                    throw new RuntimeException();
+                }
+                StringBlock sb = new StringBlock();
+                sb.read(in, chunk);
+                keyNamesX = sb;
+            }
         }
 
-        out: while (in.hasRemaining()) {
-            Chunk chunk = new Chunk();
+
+        final int end = package_header.location + package_header.size;
+
+        // 2. search for type specs
+        in.position(package_header.location + package_header.headSize);
+        while (in.position() < end) {
+            ResChunk_header chunk = new ResChunk_header(in);
             switch (chunk.type) {
-            case RES_TABLE_TYPE_SPEC_TYPE: {
-                D("[%08x]read spec", in.position() - 8);
-                int tid = in.get() & 0xFF;
-                in.get(); // res0
-                in.getShort();// res1
-                int entryCount = in.getInt();
+                case RES_TABLE_TYPE_SPEC_TYPE: {
 
-                Type t = pkg.getType(tid, typeNamesX[tid - 1], entryCount);
-                for (int i = 0; i < entryCount; i++) {
-                    t.getSpec(i).flags = in.getInt();
+                    /**
+                     * A specification of the resources defined by a particular type.
+                     *
+                     * There should be one of these chunks for each resource type.
+                     *
+                     * This structure is followed by an array of integers providing the set of
+                     * configuration change flags (ResTable_config::CONFIG_*) that have multiple
+                     * resources for that configuration.  In addition, the high bit is set if that
+                     * resource has been made public.
+                     *
+                     * // Additional flag indicating an entry is public.
+                     * SPEC_PUBLIC = 0x40000000
+                     */
+
+                    D("[%08x]read spec", in.position() - 8);
+
+                    // The type identifier this chunk is holding.  Type IDs start
+                    // at 1 (corresponding to the value of the type bits in a
+                    // resource identifier).  0 is invalid.
+                    // uint8_t id;
+                    int tid = in.get() & 0xFF;
+                    in.get(); // res0
+                    in.getShort();// res1
+
+                    // Number of uint32_t entry configuration masks that follow.
+                    // uint32_t entryCount;
+                    int entryCount = in.getInt();
+
+                    in.position(chunk.location + chunk.headSize);
+                    Type t = pkg.ensureType(tid, typeNamesX.get(tid - 1), entryCount);
+                    for (int i = 0; i < entryCount; i++) {
+                        t.getSpec(i).flags = in.getInt();
+                    }
                 }
-            }
                 break;
+                default:
+                    break;
+            }
+            in.position(chunk.location + chunk.size);
+        }
+
+        // 3. search for configs
+        in.position(package_header.location + package_header.headSize);
+        while (in.position() < end) {
+            ResChunk_header chunk = new ResChunk_header(in);
+            switch (chunk.type) {
             case RES_TABLE_TYPE_TYPE: {
+                /**
+                 * A collection of resource entries for a particular resource data
+                 * type. Followed by an array of uint32_t defining the resource
+                 * values, corresponding to the array of type strings in the
+                 * ResTable_package::typeStrings string block. Each of these hold an
+                 * index from entriesStart; a value of NO_ENTRY means that entry is
+                 * not defined.
+                 *
+                 * There may be multiple of these chunks for a particular resource type,
+                 * supply different configuration variations for the resource values of
+                 * that type.
+                 *
+                 * It would be nice to have an additional ordered index of entries, so
+                 * we can do a binary search if trying to find a resource by string name.
+                 */
                 D("[%08x]read config", in.position() - 8);
+
+
+                // The type identifier this chunk is holding.  Type IDs start
+                // at 1 (corresponding to the value of the type bits in a
+                // resource identifier).  0 is invalid.
+                // uint8_t id;
                 int tid = in.get() & 0xFF;
                 in.get(); // res0
                 in.getShort();// res1
+
+                // Number of uint32_t entry indices that follow.
+                // uint32_t entryCount;
                 int entryCount = in.getInt();
-                Type t = pkg.getType(tid, typeNamesX[tid - 1], entryCount);
+                Type t = pkg.ensureType(tid, typeNamesX.get(tid - 1), entryCount);
+
+                // Offset from header where ResTable_entry data starts.
+                // uint32_t entriesStart;
                 int entriesStart = in.getInt();
 
                 D("[%08x]read config id", in.position());
@@ -305,7 +346,7 @@ public class ArscParser implements ResConst {
                 byte[] data = new byte[size];
                 in.position(p);
                 in.get(data);
-                Config config = new Config(data, entryCount);
+                Config config = new Config(data);
 
                 in.position(chunk.location + chunk.headSize);
 
@@ -318,31 +359,82 @@ public class ArscParser implements ResConst {
                 D("[%08x]read config entrys", in.position());
                 for (int i = 0; i < entrys.length; i++) {
                     if (entrys[i] != -1) {
-                        in.position(chunk.location + entriesStart + entrys[i]);
-                        ResSpec spec = t.getSpec(i);
-                        readEntry(config, spec);
+                        try {
+                            extracted(in, chunk, t, entriesStart, config, entrys, i);
+                        } catch (Exception ignore) {
+                            E("fail parse config entry %d", i);
+                        }
                     }
                 }
 
                 t.addConfig(config);
             }
                 break;
+            case RES_TABLE_LIBRARY_TYPE:
+                int libraryCount = in.getInt();
+                in.position(chunk.location + chunk.headSize);
+                for (int i = 0; i < libraryCount; i++) {
+/**
+ * A shared library package-id to package name entry.
+                    struct ResTable_lib_entry
+                    {
+                        // The package-id this shared library was assigned at build time.
+                        // We use a uint32 to keep the structure aligned on a uint32 boundary.
+                        uint32_t packageId;
+
+                        // The package name of the shared library. \0 terminated.
+                        char16_t packageName[128];
+                    };
+ */
+                    int packageId = in.getInt();
+                    String packageName = readFixedU16String(in);
+                    this.pkg.libraries.put(packageName, packageId);
+                }
+                break;
             default:
-                break out;
+                break;
             }
             in.position(chunk.location + chunk.size);
         }
     }
 
+    private void extracted(ByteBuffer in, ResChunk_header chunk, Type t, int entriesStart, Config config, int[] entrys, int i) {
+        in.position(chunk.location + entriesStart + entrys[i]);
+        ResSpec spec = t.getSpec(i);
+        readEntry(config, spec);
+    }
+
+    private String readFixedU16String(ByteBuffer in) {
+        String name;
+        int nextPisition = in.position() + 128 * 2;
+        StringBuilder sb = new StringBuilder(32);
+        for (int i = 0; i < 128; i++) {
+            int s = in.getShort();
+            if (s == 0) {
+                break;
+            } else {
+                sb.append((char) s);
+            }
+        }
+        name = sb.toString();
+        in.position(nextPisition);
+        return name;
+    }
+
     private Object readValue() {
+        int pos = in.position();
         int size1 = in.getShort();// 8
         int zero = in.get();// 0
         int type = in.get() & 0xFF; // TypedValue.*
         int data = in.getInt();
         String raw = null;
-        if (type == TYPE_STRING) {
-            raw = strings[data];
+        List<StyleSpan> xstyles = null;
+        if (type == Res_value.TYPE_STRING) {
+            raw = strings.get(data);
+            xstyles = strings.getStyles(data);
+
         }
-        return new Value(type, data, raw);
+        in.position(pos + size1);
+        return new Res_value(type, data, raw, xstyles);
     }
 }

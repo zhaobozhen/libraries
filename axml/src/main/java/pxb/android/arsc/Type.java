@@ -26,9 +26,6 @@ public class Type {
     /* package */int wPosition;
 
     public void addConfig(Config config) {
-        if (config.entryCount != specs.length) {
-            throw new RuntimeException();
-        }
         configs.add(config);
     }
 

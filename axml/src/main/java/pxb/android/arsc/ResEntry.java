@@ -15,21 +15,26 @@
  */
 package pxb.android.arsc;
 
-public class ResEntry {
-    public final int flag;
+import pxb.android.Res_value;
 
-    public final ResSpec spec;
+public class ResEntry {
     /**
-     * {@link BagValue} or {@link Value}
+     * {@link BagValue} or {@link Res_value}
      */
     public Object value;
 
+    public boolean isPublic;
+
     /* package */int wOffset;
 
-    public ResEntry(int flag, ResSpec spec) {
+    public ResEntry() {
         super();
-        this.flag = flag;
-        this.spec = spec;
+    }
+
+    public ResEntry(boolean isPublic, Object value) {
+        super();
+        this.isPublic = isPublic;
+        this.value = value;
     }
 
 }

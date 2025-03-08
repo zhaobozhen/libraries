@@ -15,13 +15,9 @@
  */
 package pxb.android.axml;
 
-public abstract class NodeVisitor {
+import pxb.android.Res_value;
 
-    public static final int TYPE_FIRST_INT = 0x10;
-    public static final int TYPE_INT_BOOLEAN = 0x12;
-    public static final int TYPE_INT_HEX = 0x11;
-    public static final int TYPE_REFERENCE = 0x01;
-    public static final int TYPE_STRING = 0x03;
+public abstract class NodeVisitor {
     protected NodeVisitor nv;
 
     public NodeVisitor() {
@@ -39,14 +35,12 @@ public abstract class NodeVisitor {
      * @param ns
      * @param name
      * @param resourceId
-     * @param type
-     *            {@link #TYPE_STRING} or others
-     * @param obj
-     *            a string for {@link #TYPE_STRING} ,and Integer for others
+     * @param value
+     *            Res_value or AttrRes_value
      */
-    public void attr(String ns, String name, int resourceId, int type, Object obj) {
+    public void attr(String ns, String name, int resourceId, String raw, Res_value value) {
         if (nv != null) {
-            nv.attr(ns, name, resourceId, type, obj);
+            nv.attr(ns, name, resourceId, raw, value);
         }
     }
 
@@ -89,9 +83,9 @@ public abstract class NodeVisitor {
      * 
      * @param value
      */
-    public void text(int lineNumber, String value) {
+    public void text(int lineNumber, String value, Res_value styled) {
         if (nv != null) {
-            nv.text(lineNumber, value);
+            nv.text(lineNumber, value, styled);
         }
     }
 }

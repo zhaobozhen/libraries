@@ -10,5 +10,5 @@ ext {
 
     absinthe_me_version = "1.0.7"
     absinthe_utils_version = "1.2.3"
-    absinthe_axml_version = "1.0.1"
+    absinthe_axml_version = "1.0.2"
 }

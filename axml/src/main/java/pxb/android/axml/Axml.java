@@ -15,28 +15,50 @@
  */
 package pxb.android.axml;
 
+import pxb.android.Res_value;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Axml extends AxmlVisitor {
+    public static Axml parse(ByteBuffer b) throws IOException {
+        Axml axml = new Axml();
+        AxmlReader r = new AxmlReader(b);
+        r.accept(axml);
+        return axml;
+    }
+
+    public static Axml parse(byte[] b) throws IOException {
+        return parse(ByteBuffer.wrap(b));
+    }
+
+    public byte[] toByteArray() throws IOException {
+        AxmlWriter w = new AxmlWriter();
+        this.accept(w);
+        return w.toByteArray();
+    }
 
     public static class Node extends NodeVisitor {
         public static class Attr {
             public String ns, name;
-            public int resourceId, type;
-            public Object value;
+            public int resourceId;
+            public Res_value value;
+            public String raw;
 
             public void accept(NodeVisitor nodeVisitor) {
-                nodeVisitor.attr(ns, name, resourceId, type, value);
+                nodeVisitor.attr(ns, name, resourceId, raw, value);
             }
         }
 
         public static class Text {
             public int ln;
             public String text;
+            public Res_value styled;
 
             public void accept(NodeVisitor nodeVisitor) {
-                nodeVisitor.text(ln, text);
+                nodeVisitor.text(ln, text, styled);
             }
         }
 
@@ -68,13 +90,13 @@ public class Axml extends AxmlVisitor {
         }
 
         @Override
-        public void attr(String ns, String name, int resourceId, int type, Object obj) {
+        public void attr(String ns, String name, int resourceId, String raw, Res_value obj) {
             Attr attr = new Attr();
             attr.name = name;
             attr.ns = ns;
             attr.resourceId = resourceId;
-            attr.type = type;
             attr.value = obj;
+            attr.raw = raw;
             attrs.add(attr);
         }
 
@@ -93,11 +115,51 @@ public class Axml extends AxmlVisitor {
         }
 
         @Override
-        public void text(int lineNumber, String value) {
+        public void text(int lineNumber, String value, Res_value styled) {
             Text text = new Text();
             text.ln = lineNumber;
             text.text = value;
+            text.styled = styled;
             this.text = text;
+        }
+
+        public Attr findFirstAttr(int resourceId) {
+            for (Node.Attr attr : this.attrs) {
+                if (attr.resourceId == resourceId) {
+                    return attr;
+                }
+            }
+            return null;
+        }
+
+        public Attr findFirstAttr(String attrName) {
+            for (Node.Attr attr : this.attrs) {
+                if (attr.name.equals(attrName) && attr.ns == null) {
+                    return attr;
+                }
+            }
+            return null;
+        }
+
+        public Node findFirst(final String nodeName) {
+            for (Node node : this.children) {
+                if (node.name.equals(nodeName)) {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        public void replace(String ns, String name, int resourceId, String raw, Res_value v) {
+            Axml.Node.Attr attr = this.findFirstAttr(resourceId);
+            if (attr != null) {
+                attr.ns = ns;
+                attr.name = name;
+                attr.value = v;
+                attr.raw = raw;
+            } else {
+                this.attr(ns, name, resourceId, raw, v);
+            }
         }
     }
 
@@ -139,4 +201,15 @@ public class Axml extends AxmlVisitor {
         ns.ln = ln;
         nses.add(ns);
     }
+
+    public Node findFirst(final String nodeName) {
+        for (Node node : this.firsts) {
+            if (node.name.equals(nodeName)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+
 }

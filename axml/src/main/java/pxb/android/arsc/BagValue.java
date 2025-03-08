@@ -15,13 +15,15 @@
  */
 package pxb.android.arsc;
 
+import pxb.android.Res_value;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class BagValue {
-    public List<Map.Entry<Integer, Value>> map = new ArrayList<Entry<Integer, Value>>();
+    public List<Map.Entry<Integer, Res_value>> map = new ArrayList<Entry<Integer, Res_value>>();
     public final int parent;
 
     public BagValue(int parent) {
@@ -59,7 +61,7 @@ public class BagValue {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("{bag%08x", parent));
-        for (Map.Entry<Integer, Value> e : map) {
+        for (Map.Entry<Integer, Res_value> e : map) {
             sb.append(",").append(String.format("0x%08x", e.getKey()));
             sb.append("=");
             sb.append(e.getValue());

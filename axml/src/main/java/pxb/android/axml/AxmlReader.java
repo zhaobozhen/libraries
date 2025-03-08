@@ -15,21 +15,11 @@
  */
 package pxb.android.axml;
 
-import static pxb.android.axml.AxmlParser.END_FILE;
-import static pxb.android.axml.AxmlParser.END_NS;
-import static pxb.android.axml.AxmlParser.END_TAG;
-import static pxb.android.axml.AxmlParser.START_FILE;
-import static pxb.android.axml.AxmlParser.START_NS;
-import static pxb.android.axml.AxmlParser.START_TAG;
-import static pxb.android.axml.AxmlParser.TEXT;
-
-import android.util.Log;
-
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static pxb.android.axml.AxmlParser.*;
 
 /**
  * a class to read android axml
@@ -37,70 +27,61 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:pxb1988@gmail.com">Panxiaobo</a>
  */
 public class AxmlReader {
-	
-	private static final Logger logger = LoggerFactory.getLogger(AxmlReader.class);
-	
-	public static final NodeVisitor EMPTY_VISITOR = new NodeVisitor() {
+    public static final NodeVisitor EMPTY_VISITOR = new NodeVisitor() {
 
-		@Override
-		public NodeVisitor child(String ns, String name) {
-			return this;
-		}
+        @Override
+        public NodeVisitor child(String ns, String name) {
+            return this;
+        }
 
-	};
-	final AxmlParser parser;
+    };
+    final AxmlParser parser;
 
-	public AxmlReader(byte[] data) {
-		super();
-		this.parser = new AxmlParser(data);
-	}
+    public AxmlReader(byte[] data) {
+        this(ByteBuffer.wrap(data));
+    }
 
-	public void accept(final AxmlVisitor av) throws IOException {
-		Stack<NodeVisitor> nvs = new Stack<NodeVisitor>();
-		NodeVisitor tos = av;
-		while (true) {
-			int type;
-			try {
-				type = parser.next();
-			} catch (RuntimeException e) {
-				Log.e("AxmlReader", e.toString());
-				return;
-			}
-			switch (type) {
-			case START_FILE:
-				break;
-			case START_TAG:
-				nvs.push(tos);
-				tos = tos.child(parser.getNamespaceUri(), parser.getName());
-				if (tos != null) {
-					if (tos != EMPTY_VISITOR) {
-						tos.line(parser.getLineNumber());
-						for (int i = 0; i < parser.getAttrCount(); i++) {
-							tos.attr(parser.getAttrNs(i), parser.getAttrName(i), parser.getAttrResId(i),
-									parser.getAttrType(i), parser.getAttrValue(i));
-						}
-					}
-				} else {
-					tos = EMPTY_VISITOR;
-				}
-				break;
-			case END_TAG:
-				tos.end();
-				tos = nvs.pop();
-				break;
-			case START_NS:
-				av.ns(parser.getNamespacePrefix(), parser.getNamespaceUri(), parser.getLineNumber());
-				break;
-			case END_NS:
-				break;
-			case TEXT:
-				tos.text(parser.getLineNumber(), parser.getText());
-				break;
-			case END_FILE:
-				return;
-			default:
-				logger.warn("Unsupported tag: {}", type);
-			}
-		}
-	}
+    public AxmlReader(ByteBuffer data) {
+        super();
+        this.parser = new AxmlParser(data);
+    }
+
+    public void accept(final AxmlVisitor av) throws IOException {
+        Stack<NodeVisitor> nvs = new Stack<NodeVisitor>();
+        NodeVisitor tos = av;
+        while (true) {
+            int type = parser.next();
+            switch (type) {
+            case START_TAG:
+                nvs.push(tos);
+                tos = tos.child(parser.getNamespaceUri(), parser.getName());
+                if (tos != null) {
+                    if (tos != EMPTY_VISITOR) {
+                        tos.line(parser.getLineNumber());
+                        for (int i = 0; i < parser.getAttrCount(); i++) {
+                            tos.attr(parser.getAttrNs(i), parser.getAttrName(i), parser.getAttrResId(i),
+                                    parser.getAttrRawString(i), parser.getAttrResValue(i));
+                        }
+                    }
+                } else {
+                    tos = EMPTY_VISITOR;
+                }
+                break;
+            case END_TAG:
+                tos.end();
+                tos = nvs.pop();
+                break;
+            case START_NS:
+                av.ns(parser.getNamespacePrefix(), parser.getNamespaceUri(), parser.getLineNumber());
+                break;
+            case END_NS:
+                break;
+            case TEXT:
+                tos.text(parser.getLineNumber(), parser.getText(), parser.getTypedText());
+                break;
+            case END_FILE:
+                return;
+            }
+        }
+    }
 }

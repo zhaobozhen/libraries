@@ -15,6 +15,8 @@
  */
 package pxb.android.axml;
 
+import pxb.android.Res_value;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ public class DumpAdapter extends AxmlVisitor {
     }
 
     @Override
-    public void attr(String ns, String name, int resourceId, int type, Object obj) {
+    public void attr(String ns, String name, int resourceId, String raw, Res_value obj) {
         for (int i = 0; i < deep; i++) {
             System.out.print("  ");
         }
@@ -53,20 +55,9 @@ public class DumpAdapter extends AxmlVisitor {
         if (resourceId != -1) {
             System.out.print(String.format("(%08x)", resourceId));
         }
-        if (obj instanceof String) {
-            System.out.print(String.format("=[%08x]\"%s\"", type, obj));
-        } else if (obj instanceof Boolean) {
-            System.out.print(String.format("=[%08x]\"%b\"", type, obj));
-        } else if (obj instanceof ValueWrapper) {
-            ValueWrapper w = (ValueWrapper) obj;
-            System.out.print(String.format("=[%08x]@%08x, raw: \"%s\"", type, w.ref, w.raw));
-        } else if (type == TYPE_REFERENCE) {
-            System.out.print(String.format("=[%08x]@%08x", type, obj));
-        } else {
-            System.out.print(String.format("=[%08x]%08x", type, obj));
-        }
-        System.out.println();
-        super.attr(ns, name, resourceId, type, obj);
+        System.out.print("=");
+        System.out.println(obj);
+        super.attr(ns, name, resourceId, raw, obj);
     }
 
     @Override
@@ -80,10 +71,7 @@ public class DumpAdapter extends AxmlVisitor {
         }
         System.out.println(name);
         NodeVisitor nv = super.child(ns, name);
-        if (nv != null) {
-            return new DumpAdapter(nv, deep + 1, nses);
-        }
-        return null;
+        return new DumpAdapter(nv, deep + 1, nses);
     }
 
     protected String getPrefix(String uri) {
@@ -104,13 +92,13 @@ public class DumpAdapter extends AxmlVisitor {
     }
 
     @Override
-    public void text(int ln, String value) {
+    public void text(int ln, String value, Res_value styled) {
         for (int i = 0; i < deep + 1; i++) {
             System.out.print("  ");
         }
         System.out.print("T: ");
         System.out.println(value);
-        super.text(ln, value);
+        super.text(ln, value, styled);
     }
 
 }

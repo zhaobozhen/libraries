@@ -19,16 +19,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Config {
-    public final int entryCount;
-    public final byte[] id;
-    public Map<Integer, ResEntry> resources = new TreeMap<Integer, ResEntry>();
+    public byte[] id; // use ConfigDetail to modify
+    public Map<ResSpec, ResEntry> resources = new TreeMap<ResSpec, ResEntry>();
     /* package */int wChunkSize;
     /* package */int wEntryStart;
     /* package */int wPosition;
 
-    public Config(byte[] id, int entryCount) {
+    public Config(byte[] id) {
         super();
         this.id = id;
-        this.entryCount = entryCount;
     }
 }

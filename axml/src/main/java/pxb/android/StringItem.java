@@ -15,42 +15,63 @@
  */
 package pxb.android;
 
-public class StringItem {
-    public String data;
+import java.util.Arrays;
+
+public class StringItem implements ResConst {
+    final public String data;
+    final public StyleSpan[] styleSpans;
+    final public int resourceId;
     public int dataOffset;
     public int index;
-
-    public StringItem() {
-        super();
-    }
 
     public StringItem(String data) {
         super();
         this.data = data;
+        this.resourceId = NO_RESOURCE_ID;
+        this.styleSpans = null;
+    }
+
+    public StringItem(String data, int resourceId) {
+        super();
+        this.data = data;
+        this.resourceId = resourceId;
+        this.styleSpans = null;
+    }
+
+    public StringItem(String data, StyleSpan[] styleSpans) {
+        super();
+        this.data = data;
+        this.styleSpans = styleSpans;
+        this.resourceId = NO_RESOURCE_ID;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        if (obj == null)
+        if (o == null || getClass() != o.getClass())
             return false;
-        if (getClass() != obj.getClass())
+
+        StringItem that = (StringItem) o;
+        if (!data.equals(that.data))
             return false;
-        StringItem other = (StringItem) obj;
-        if (data == null) {
-            if (other.data != null)
-                return false;
-        } else if (!data.equals(other.data))
+        if (resourceId != that.resourceId)
             return false;
+        if (resourceId != NO_RESOURCE_ID) {
+            return true;
+        }
+
+        if (!Arrays.equals(styleSpans, that.styleSpans))
+            return false;
+
         return true;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        int result = data.hashCode();
+        result = 31 * result + (styleSpans != null ? Arrays.hashCode(styleSpans) : 0);
+        result = 31 * result + resourceId;
         return result;
     }
 
