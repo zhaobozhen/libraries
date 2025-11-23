@@ -30,6 +30,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
     BottomSheetDialogFragment(), View.OnLayoutChangeListener {
 
     var animationDuration = 350L
+    var maxPeekHeightPercentage = 0f
     var maxPeekSize: Int = 0
 
     private val TAG = "BaseBottomSheetViewDialogFragment"
@@ -125,7 +126,7 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _root = initRootView()
+        _root = initRootView().apply { applyRootView(this) }
         init()
         return _root
     }
@@ -191,6 +192,16 @@ abstract class BaseBottomSheetViewDialogFragment<T : View> :
         if ((bottom - top) != (oldBottom - oldTop)) {
             enqueueAnimation {
                 animateHeight(from = oldBottom - oldTop, to = bottom - top, onEnd = { })
+            }
+        }
+    }
+
+    private fun applyRootView(root: T) {
+        root. post {
+            if (maxPeekHeightPercentage >= 0f) {
+                maxPeekSize = ((dialog?.window?.decorView?.height ?: 0) * maxPeekHeightPercentage).toInt()
+            } else {
+                throw IllegalArgumentException("maxPeekHeightPercentage must be greater than 0")
             }
         }
     }
