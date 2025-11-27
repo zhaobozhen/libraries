@@ -1,10 +1,10 @@
 ext {
-    gradle_plugin_version = '8.3.1'
-    kotlin_version = '1.9.23'
+    gradle_plugin_version = '8.7.3'
+    kotlin_version = '2.0.21'
 
-    androidx_appcompat_version = '1.6.1'
-    androidx_core_version = '1.12.0'
-    google_material_component_version = '1.11.0'
+    androidx_appcompat_version = '1.7.0'
+    androidx_core_version = '1.13.1'
+    google_material_component_version = '1.12.0'
 
     drakeet_about_page_version = '2.5.2'
 
